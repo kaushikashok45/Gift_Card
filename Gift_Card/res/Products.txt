@@ -1,0 +1,2 @@
+Lamp,1000,0,0,Out of stock,admin123
+Laptop,100000,1,100,Available,admin123
