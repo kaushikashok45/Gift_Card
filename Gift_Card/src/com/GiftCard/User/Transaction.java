@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import com.GiftCard.Administration.*;
 import com.GiftCard.TxtFileIO.ProductReader;
 import com.GiftCard.TxtFileIO.TransactionReader;
+import com.GiftCard.Connectors.*;
 
 public class Transaction{
   private final String transactionID;
@@ -18,7 +19,7 @@ public class Transaction{
   private final char transaxType;
   private HashMap<String,Integer> productList;
 
-  public Transaction(String prodIDs,String custID,String giftID) throws IOException{
+  public Transaction(String prodIDs,String custID,String giftID) throws Exception{
     this.giftID=giftID;
     UUID uuid=UUID.randomUUID();
     this.custID=custID;
@@ -45,7 +46,7 @@ public class Transaction{
     transaxType='d';
   }
 
-  Transaction(BigDecimal amount,String custID,String giftID) throws IOException{
+  Transaction(BigDecimal amount,String custID,String giftID) throws Exception{
     this.giftID=giftID;
     UUID uuid=UUID.randomUUID();
     this.custID=custID;
@@ -59,7 +60,7 @@ public class Transaction{
     transaxType='c';
   }
 
-  public Transaction(String transaxID,String custID,String giftID,String billAmount,String timestamp,String transaxType,String transaxmap) throws IOException{
+  public Transaction(String transaxID,String custID,String giftID,String billAmount,String timestamp,String transaxType,String transaxmap) throws Exception{
     this.transactionID=transaxID;
     this.custID=custID;
     this.giftID=giftID;
@@ -74,7 +75,7 @@ public class Transaction{
     }
   }
 
-  public void printTransaction() throws IOException{
+  public void printTransaction() throws Exception{
     if(this.transaxType=='d'){
       System.out.println("-------------------------------------------------------------------");
       System.out.println("Transaction "+this.transactionID+" details");
@@ -106,7 +107,7 @@ public class Transaction{
     }
   }
 
-  public void printGoods() throws IOException{
+  public void printGoods() throws Exception{
       System.out.println("-------------------------------------------------------------------");
       System.out.println("Product id                "+"Product name            "+"Product price/unit"+"                   Quantity"+"            Product(s) price");
       for(String prodID:(this.productList.keySet())){
@@ -118,36 +119,7 @@ public class Transaction{
       System.out.println("-------------------------------------------------------------------");
   }
 
-  public void saveTransaction() throws IOException{
-    File dir=new File("./../res/");
-    File file=new File(dir,"Transactions.txt");
-    try(FileWriter writer=new FileWriter(file,true)){
-      String currTransax=this.getTid()+","+this.getCustId()+","+this.getGiftId()+","+this.getBillAmount()+","+this.getTimeStamp()+","+this.getTransaxType()+",";
-      String temp=null;
-      int len=productList.size();
-      int count=0;
-      for(String s:productList.keySet()){
-        if(temp!=null){
-          temp=temp+s+":"+productList.get(s)+"and";
-        }
-        else if(count==(len-1)){
-          temp=s+":"+productList.get(s);
-        }
-        else{
-          temp=s+":"+productList.get(s)+"and";
-        }
-        count+=1;
-      }
-      currTransax=currTransax+temp;
-      writer.write(currTransax);
-      writer.write("\n");
-      writer.flush();
-      System.out.println("Transaction saved successfully!");
-    }
-    catch(IOException e){
-      e.printStackTrace();
-    }
-  }
+
 
   public BigDecimal getBillAmount(){
     return this.billAmount;
@@ -177,16 +149,16 @@ public class Transaction{
     return this.timestamp;
   }
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
+    Saver data=new ConnectTxt();
     Transaction t1=new Transaction("1-2,2-3,2-4","A123","abcde");
     BigDecimal top=new BigDecimal("1000.35");
     Transaction t2=new Transaction(top,"B124","abcde");
+    TransactionReader tr=new TransactionReader();
     t1.printTransaction();
     t2.printTransaction();
-    t1.saveTransaction();
-    t2.saveTransaction();
-    TransactionReader t=new TransactionReader();
-    t.printTransactions();
+    (data).save(t1);
+    tr.printTransactions();
   }
 
 }

@@ -4,6 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.math.BigDecimal;
 import com.GiftCard.TxtFileIO.*;
+import com.GiftCard.Connectors.*;
 
 public class Product{
   private String name;
@@ -12,15 +13,17 @@ public class Product{
   private int qty;
   private String status;
   private String addedBy;
-
-    public Product(String name,String amount,String qty,String aid) throws IOException{
+   
+    public Product(String name,String amount,String qty,String aid) throws Exception{
+      
     ProductReader temp=new ProductReader();
+    Saver data=new ConnectTxt();
     if(!temp.checkProductExists(name,amount)){
       name=name.replaceAll(","," ");
       this.name=name;
       this.amount=new BigDecimal(amount);
-      this.pid=Integer.toString(temp.countProducts());
-      if(temp.countProducts()>0){
+      this.pid=Integer.toString((data).counter("Products.txt"));
+      if((data).counter("Products.txt")>0){
         int stemp=(Integer.parseInt((temp.getLastProduct()).getPid()))+1;
         this.pid=Integer.toString(stemp);
       }
@@ -71,22 +74,9 @@ public class Product{
     return this.addedBy;
   }  
 
-  public void saveProduct() throws IOException{
-    File dir=new File("./../res/");
-    File file=new File(dir,"Products.txt");
-    try(FileWriter writer=new FileWriter(file,true)){
-      String currProduct=this.name+","+this.amount+","+this.pid+","+this.qty+","+this.status+","+this.addedBy;
-      writer.write(currProduct);
-      writer.write("\n");
-      writer.flush();
-      System.out.println("Product saved successfully!");
-    }
-    catch(IOException e){
-      e.printStackTrace();
-    }
-  }
+ 
 
-  public void updateStock(String qty) throws IOException{
+  public void updateStock(String qty) throws Exception{
     int bought=Integer.parseInt(qty);
     this.qty=(this.qty)-bought;
     ProductReader pr=new ProductReader();
@@ -100,7 +90,7 @@ public class Product{
     }
   }
 
-  public void addStock(String qty) throws IOException{
+  public void addStock(String qty,String aid) throws Exception{
     int inStock=Integer.parseInt(qty);
     this.qty=(this.qty)+inStock;
     ProductReader pr=new ProductReader();
@@ -108,11 +98,12 @@ public class Product{
       this.status="Available";
       pr.updateStock(this.getPid(),this.getQty());
       pr.updateStockStatus(this.getPid(),this.getStatus());
+      this.changeAddedBy(aid);
       System.out.println("Stock added successfully!");
     }
   }
 
-  public void changePrice() throws IOException{
+  public void changePrice() throws Exception{
     Scanner sc=new Scanner(System.in);
     System.out.println("");
     boolean flag=true;
@@ -135,15 +126,15 @@ public class Product{
   
   }
 
-  public void changeAddedBy(String aid){
+  public void changeAddedBy(String aid) throws Exception{
     this.addedBy=aid;
     ProductReader pr=new ProductReader();
-    pr.updateAddedBy(this.getPid());
+    pr.updateAddedBy(this.getPid(),aid);
   }
 
 
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
     char check='Y';
     while(check=='Y'){
       Scanner sc=new Scanner(System.in);
@@ -177,7 +168,8 @@ public class Product{
       }
       Product p=new Product(name,price,qty,"aadmin123");
       if((p.getName())!=null){
-        p.saveProduct();
+        ProductReader pr=new ProductReader();
+       
       }
       else{
         System.out.println("Product already added!");

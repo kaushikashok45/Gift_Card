@@ -8,14 +8,17 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import com.GiftCard.TxtFileIO.*;
 import com.GiftCard.User.*;
+import com.GiftCard.Connectors.*;
 import com.GiftCard.Purchase.*;
 
 
 public class Admin{
   private String aid;
   private String password;
+  private String name;
+  private String email;
 
-  public void clearConsoleScreen() throws IOException {
+  public void clearConsoleScreen() throws Exception {
        System.out.print("\033[H\033[2J");
        System.out.flush();
   }
@@ -28,9 +31,17 @@ public class Admin{
     return this.password;
   }
 
+   public String getName(){
+    return this.name;
+  }
+
+   public String getEmail(){
+    return this.email;
+  }
 
 
-  public Admin() throws IOException{
+
+  public Admin() throws Exception{
     this.aid=null;
     this.password=null;
     boolean verify=false;
@@ -78,12 +89,36 @@ public class Admin{
     }
   }
 
-  public Admin(String id) throws IOException{
+  public Admin(String id) throws Exception{
     this.aid=null;
     this.password=null;
     Scanner sc=new Scanner(System.in);
      AdminReader ar=new AdminReader();
      if(!(ar.checkAdminExists(id))){
+       System.out.println("Enter your name: ");
+       this.name=sc.nextLine();
+       boolean emailCheck1=true,emailCheck2=true;
+       String tempEmail=null;
+       while(emailCheck1 || emailCheck2){
+        System.out.println("Enter you email id: ");
+        tempEmail=sc.nextLine();
+        String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher=pattern.matcher(tempEmail);
+        if(matcher.matches()){
+          emailCheck1=false;
+        }
+        else{
+          System.out.println("Enter a valid email id!");
+        }
+        if(!(ar.checkAdminExistsByEmail(tempEmail))){
+           emailCheck2=false;
+        }
+        else{
+          System.out.println("Admin already exists!");
+        }
+       }
+       this.email=tempEmail;
        String pwd1="";
        String pwd2=null;
        do{
@@ -106,7 +141,9 @@ public class Admin{
        if(code.equals("Admin123@gift")){
          this.aid=id;
          this.password=pwd1;
-         this.saveAdmin();
+         AdminReader saver=new AdminReader();
+         Saver data=new ConnectTxt();
+         (data).save(this);
        }
        else{
          System.out.println("Invalid security code...Admin creation aborted!");
@@ -117,26 +154,14 @@ public class Admin{
      }
   }
 
-  public  Admin(String id,String pwd){
+  public  Admin(String id,String pwd,String name,String email){
     this.aid=id;
     this.password=pwd;
+    this.email=email;
+    this.name=name;
   }
 
-  public void saveAdmin(){
-    File dir=new File("./../res/"); 
-    File file=new File(dir,"Admin.txt");
-    try(FileWriter writer=new FileWriter(file,true)){
-      String currTransax=this.aid+","+this.password;
-      writer.write(currTransax);
-      writer.write("\n");
-      writer.flush();
-      System.out.println("Admin account created successfully!");
-    }
-    catch(IOException e){
-      System.out.println("Error while saving admin details!");
-      e.printStackTrace();
-    }
-  }
+  
 
   public String encryptor(String s){
     StringBuffer result=new StringBuffer("");
@@ -164,7 +189,7 @@ public class Admin{
     resultf=resultf.trim();
     return resultf;
   }
-  public void addProducts() throws IOException{
+  public void addProducts() throws Exception{
     char check='Y';
     while(check=='Y'){
       Scanner sc=new Scanner(System.in);
@@ -198,7 +223,8 @@ public class Admin{
       }
       Product  p=new Product(name,price,qty,this.getAid());
       if((p.getName())!=null){
-        p.saveProduct();
+        Saver data=new ConnectTxt(); 
+        data.save(p);
       }
       else{
         System.out.println("Product already added!");
@@ -209,7 +235,7 @@ public class Admin{
     }
   }
 
-  public void updateStock() throws IOException{
+  public void updateStock() throws Exception{
     Scanner sc=new Scanner(System.in);
     System.out.println("<----Product List---->");
     ProductReader pr=new ProductReader();
@@ -234,7 +260,7 @@ public class Admin{
             System.out.println("Enter a valid quantity!");
           }
         }
-        (pr.getProduct(prodId)).addStock(qty);
+        (pr.getProduct(prodId)).addStock(qty,this.getAid());
         (pr.getProduct(prodId)).changeAddedBy(this.getAid());
       }
       else{
@@ -246,7 +272,7 @@ public class Admin{
     }
   }
 
-  public void updatePrice() throws IOException{
+  public void updatePrice() throws Exception{
     Scanner sc=new Scanner(System.in);
     System.out.println("<----Product List---->");
     ProductReader pr=new ProductReader();
@@ -271,10 +297,11 @@ public class Admin{
     }
   }
 
-  public void deleteProduct() throws IOException{
+  public void deleteProduct() throws Exception{
     Scanner sc=new Scanner(System.in);
     ProductReader pr=new ProductReader();
-    if(pr.countProducts()>0){
+    Saver data=new ConnectTxt();
+    if(((data).counter("Products.txt"))>0){
       System.out.println("<----Product List---->");
     pr.printProducts();
     System.out.println("\n");
@@ -306,9 +333,10 @@ public class Admin{
    }
   }
 
-  public void viewAllProducts() throws IOException{
+  public void viewAllProducts() throws Exception{
     ProductReader pr=new ProductReader();
-    if(pr.countProducts()>0){
+    Saver data=new ConnectTxt();
+    if((data).counter("Products.txt")>0){
        System.out.println("");
        System.out.println("========Product List========");
        pr.printProducts();
@@ -318,12 +346,13 @@ public class Admin{
     }
   }
 
-  public void viewAllCustomers() throws IOException{
+  public void viewAllCustomers() throws Exception{
     CustomerReader cr=new CustomerReader();
     if(cr.countCustomers()>0){
        System.out.println("");
        System.out.println("========Customer List========");
-       ArrayList<Customer> customers=cr.readCustomers();
+       Saver data=new ConnectTxt();
+       ArrayList<Customer> customers=(data).readCustomers("Customers.txt");
        for(Customer c:customers){
           c.printCustomerDetails();
        }
@@ -333,12 +362,13 @@ public class Admin{
     }
   }
 
-  public void viewAllGiftCards() throws IOException{
+  public void viewAllGiftCards() throws Exception{
     GiftCardReader cr=new GiftCardReader();
     if(cr.countGiftCards()>0){
       System.out.println("");
       System.out.println("========GiftCard List========");
-      ArrayList<GiftCard> cards=cr.readGiftCards();
+      Saver data=new ConnectTxt();
+      ArrayList<GiftCard> cards=(data).readGiftCards("Giftcards.txt");
       for(GiftCard c:cards){
        c.printGiftCard();
       }
@@ -348,12 +378,13 @@ public class Admin{
     }
   }
 
-  public void viewAllTransactions() throws IOException{
+  public void viewAllTransactions() throws Exception{
     TransactionReader cr=new TransactionReader();
-    if(cr.countTransax()>0){
+    Saver data=new ConnectTxt();
+    if((data).counter("Transactions.txt")>0){
       System.out.println("");
       System.out.println("========Transaction List========");
-      ArrayList<Transaction> transactions=cr.readTransax();
+      ArrayList<Transaction> transactions=(data).readTransactions("Transactions.txt");
       for(Transaction c:transactions){
         c.printTransaction();
       }
@@ -365,7 +396,7 @@ public class Admin{
 
 
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
     Admin a=new Admin();
     a.addProducts();
     a.updateStock();

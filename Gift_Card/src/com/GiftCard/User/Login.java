@@ -13,12 +13,12 @@ public class Login{
   private String action;
   private String result;
 
-  public void clearConsoleScreen() throws IOException {
+  public void clearConsoleScreen() throws Exception {
        System.out.print("\033[H\033[2J");
        System.out.flush();
   }
 
-  public Login() throws IOException{
+  public Login() throws Exception{
     clearConsoleScreen();
     System.out.println("------------------------");
     System.out.println("       User Login");
@@ -71,26 +71,26 @@ public class Login{
     this.writeLog();
   }
 
-  public void logout() throws IOException{
+  public void logout() throws Exception{
     this.setAction("logout");
     this.setTimestamp();
     System.out.println("Customer logout successful!");
     this.writeLog();
   }
 
-  public void emailChange() throws IOException{
+  public void emailChange() throws Exception{
     CustomerReader cr=new CustomerReader();
     Customer c=cr.getCustomer(this.getCid());
     c.changeEmail();
   }
 
-  public void passwordChange() throws IOException{
+  public void passwordChange() throws Exception{
     CustomerReader cr=new CustomerReader();
     Customer c=cr.getCustomer(this.getCid());
     c.changePassword();
   }
 
-  public boolean createGiftCard() throws IOException{
+  public boolean createGiftCard() throws Exception{
     GiftCard g=new GiftCard(this.getCid());
     boolean result=false;
     if(g!=null){
@@ -100,7 +100,7 @@ public class Login{
     return result;
   }
 
-  public void recharge() throws IOException{
+  public void recharge() throws Exception{
     clearConsoleScreen();
     System.out.println("------------------------");
     System.out.println("   Gift card top-up");
@@ -163,7 +163,7 @@ public class Login{
   
   }
 
-  public void viewGiftCard() throws IOException{
+  public void viewGiftCard() throws Exception{
     Scanner sc=new Scanner(System.in);
     boolean result=false;
     System.out.println("Enter gift card ID: ");
@@ -191,7 +191,7 @@ public class Login{
   
   }
 
-  public void showGiftCardTransax() throws IOException{
+  public void showGiftCardTransax() throws Exception{
     Scanner sc=new Scanner(System.in);
     char result='Y';
     while(result=='Y'){
@@ -229,7 +229,7 @@ public class Login{
    
   }
 
-  public void returnCard() throws IOException{
+  public void returnCard() throws Exception{
     Scanner sc=new Scanner(System.in);
     boolean result=false;
     System.out.println("Enter gift card ID: ");
@@ -267,7 +267,7 @@ public class Login{
     
   }
 
-  public void getTransactions() throws IOException{
+  public void getTransactions() throws Exception{
     TransactionReader tr=new TransactionReader();
     ArrayList<Transaction> transactions=tr.getTransax(this.getCid());
     for(Transaction t: transactions){
@@ -276,7 +276,7 @@ public class Login{
     }
   }
 
-  public void getGiftCards() throws IOException{
+  public void getGiftCards() throws Exception{
     GiftCardReader gr=new GiftCardReader();
     ArrayList<GiftCard> cards=gr.getGiftCards(this.getCid());
     for(GiftCard card:cards){
@@ -284,7 +284,7 @@ public class Login{
     }
   }
 
-  private void writeLog() throws IOException{
+  private void writeLog() throws Exception{
     File dir=new File("./../res/"); 
     File file=new File(dir,"Log.txt");
     try(FileWriter writer=new FileWriter(file,true)){
@@ -293,7 +293,7 @@ public class Login{
       writer.write("\n");
       writer.flush();
     }
-    catch(IOException e){
+    catch(Exception e){
       System.out.println("Error while writing log file!");
       e.printStackTrace();
     }
@@ -301,7 +301,7 @@ public class Login{
 
 
 
-  private void writeLog(String cid,String stamp,String action) throws IOException{
+  private void writeLog(String cid,String stamp,String action) throws Exception{
     File file=new File("Log.txt");
     try(FileWriter writer=new FileWriter(file,true)){
       String currTransax=cid+","+stamp+","+action+","+"failed";
@@ -309,7 +309,7 @@ public class Login{
       writer.write("\n");
       writer.flush();
     }
-    catch(IOException e){
+    catch(Exception e){
       System.out.println("Error while writing log file!");
       e.printStackTrace();
     }
@@ -341,7 +341,7 @@ public class Login{
     this.timestamp=formatter.format(date);
   }
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
     Login l=new Login();
     l.createGiftCard();
     l.recharge();

@@ -6,6 +6,7 @@ import java.lang.String;
 import java.io.*;
 import com.GiftCard.TxtFileIO.*;
 import com.GiftCard.TxtFileIO.CustomerReader;
+import com.GiftCard.Connectors.*;
 
 public class Customer{
   private final String cid;
@@ -13,12 +14,12 @@ public class Customer{
   private String email;
   private String password;
 
-  public void clearConsoleScreen() throws IOException {
+  public void clearConsoleScreen() throws Exception {
        System.out.print("\033[H\033[2J");
        System.out.flush();
   }
 
-   public Customer() throws IOException{
+   public Customer() throws Exception{
     clearConsoleScreen();
     System.out.println("------------------------");
     System.out.println("       User Signup");
@@ -66,7 +67,9 @@ public class Customer{
       }
     }while((!(pwd1.equals(pwd2))));
     setPassword(pwd1);
-    this.saveCustomer();
+    CustomerReader saver=new CustomerReader();
+    Saver data=new ConnectTxt();
+    (data).save(this);
  
   }
 
@@ -83,7 +86,7 @@ public class Customer{
     this.setPassword(password);
   }
 
-  public void showGiftCards() throws IOException{
+  public void showGiftCards() throws Exception{
     GiftCardReader gr=new GiftCardReader();
     ArrayList<GiftCard> cards=gr.getGiftCards(this.getCustId());
     for(GiftCard card:cards){
@@ -91,7 +94,7 @@ public class Customer{
     }
   }
 
-  public void showTransactions() throws IOException{
+  public void showTransactions() throws Exception{
     TransactionReader tr=new TransactionReader();
     ArrayList<Transaction> transactions=tr.getTransax(this.getCustId());
     for(Transaction t:transactions){
@@ -99,7 +102,7 @@ public class Customer{
     }
   }
 
-  public void showGiftTransactions() throws IOException{
+  public void showGiftTransactions() throws Exception{
     Scanner sc=new Scanner(System.in);
     TransactionReader tr=new TransactionReader();
     GiftCardReader gr=new GiftCardReader();
@@ -122,7 +125,7 @@ public class Customer{
     
   }
 
-  public void removeGiftCard(String gid) throws IOException{
+  public void removeGiftCard(String gid) throws Exception{
     GiftCardReader gr=new GiftCardReader();
     if(gr.blockGiftCard(gid)){
       System.out.println("Gift card blocked!");
@@ -138,7 +141,7 @@ public class Customer{
     System.out.println("Customer email id: "+this.getEmail());
   }
 
-  public void changeEmail() throws IOException{
+  public void changeEmail() throws Exception{
     boolean check=true;
     String mailid=null;
     Scanner sc=new Scanner(System.in);
@@ -165,7 +168,7 @@ public class Customer{
   
   }
 
-  public void changePassword() throws IOException{
+  public void changePassword() throws Exception{
     String pwd1="";
     String pwd2=null;
     Scanner sc2=new Scanner(System.in);
@@ -194,25 +197,11 @@ public class Customer{
     CustomerReader cr=new CustomerReader();
     cr.updatePassword(this.getCustId(),pwd1);
     System.out.println("Password successfully updated!");
-    sc2.close();
+
   }
 
 
-  public void saveCustomer() throws IOException{
-    File dir=new File("../res/");
-    File file=new File(dir,"Customers.txt");
-    try(FileWriter writer=new FileWriter(file,true)){
-      String currTransax=this.getCustId()+","+this.getName()+","+this.getEmail()+","+this.getPassword();
-      writer.write(currTransax);
-      writer.write("\n");
-      writer.flush();
-      System.out.println("Customer account created successfully!");
-    }
-    catch(IOException e){
-      System.out.println("Error while saving customer details!");
-      e.printStackTrace();
-    }
-  }
+ 
 
   public String encryptor(String s){
     StringBuffer result=new StringBuffer("");
@@ -265,7 +254,7 @@ public class Customer{
     this.password=pwd;
   }
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
     Customer c=new Customer();
     c.printCustomerDetails();
     c.printCustomerDetails();
