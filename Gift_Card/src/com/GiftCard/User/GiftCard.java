@@ -6,6 +6,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import com.GiftCard.Administration.*;
 import com.GiftCard.TxtFileIO.*;
+import com.GiftCard.Connectors.*;
 
 public class GiftCard{
   private final String cardno;
@@ -13,7 +14,7 @@ public class GiftCard{
   private String pin;
   private BigDecimal balance;
 
-  public void clearConsoleScreen() throws IOException {
+  public void clearConsoleScreen() throws Exception {
         System.out.print("\033[H\033[2J");
         System.out.flush();
   }
@@ -33,7 +34,7 @@ public class GiftCard{
     return check;
   }
 
-   public GiftCard(String custID) throws IOException{
+   public GiftCard(String custID) throws Exception{
     clearConsoleScreen();
     System.out.println("------------------------");
     System.out.println("       Buy Gift-Card");
@@ -78,19 +79,21 @@ public class GiftCard{
     this.pin=pin1;
     this.balance=new BigDecimal("0.00");
     System.out.println("Gift-card created successfully!");
-    this.saveGiftCard();
+    GiftCardReader gr=new GiftCardReader();
+    Saver data=new ConnectTxt();
+    (data).save(this);
     this.printGiftCard();
    
   }
 
-  public GiftCard(String cardID,String custID,String bal,String pin) throws IOException{
+  public GiftCard(String cardID,String custID,String bal,String pin) throws Exception{
     this.cardno=cardID;
     this.custID=custID;
     this.setBalance(new BigDecimal(bal));
     this.pin=pin;
   }
 
-  public void topUp(String amount) throws IOException{
+  public void topUp(String amount) throws Exception{
     boolean check=false;
     try{
       this.setBalance(((this.balance).add((new BigDecimal(amount)))));
@@ -101,18 +104,22 @@ public class GiftCard{
     }
     if(check){
       Transaction temp=new Transaction(new BigDecimal(amount),this.getCustId(),this.getGiftCardId());
-      temp.saveTransaction();
+      TransactionReader tr=new TransactionReader();
+      Saver data=new ConnectTxt();
+      (data).save(temp);
       GiftCardReader g=new GiftCardReader();
       g.updateBalance(this.getGiftCardId(),this.getBalance());
     }
   }
 
-  public boolean purchase(String prodQtyMap,String billAmt) throws IOException{
+  public boolean purchase(String prodQtyMap,String billAmt) throws Exception{
     boolean result=false;
     try{
       this.balance=(this.balance).subtract(new BigDecimal(billAmt));
       Transaction temp=new Transaction(prodQtyMap,this.getCustId(),this.getGiftCardId());
-      temp.saveTransaction();
+      TransactionReader tr=new TransactionReader();
+      Saver data=new ConnectTxt();
+      (data).save(temp);
       result=true;
       for(String s:(temp.getItems()).keySet()){
         Product p=(new ProductReader()).getProduct(s);
@@ -125,7 +132,7 @@ public class GiftCard{
     return result;
   }
 
-  public void showTransaction() throws IOException{
+  public void showTransaction() throws Exception{
     TransactionReader tr=new TransactionReader();
     ArrayList<Transaction> transactions=tr.getGiftTransax(this.getGiftCardId());
     System.out.println("Transactions made using gift card number: "+this.getGiftCardId());
@@ -166,23 +173,7 @@ public class GiftCard{
      this.balance=bal;
    }
 
-   public void saveGiftCard() throws IOException{
-     File dir=new File("./../res/");
-     File file=new File(dir,"Giftcards.txt");
-     try(FileWriter writer=new FileWriter(file,true)){
-       String currTransax=this.getGiftCardId()+","+this.getCustId()+","+this.getBalance()+","+this.getPin();
-       writer.write(currTransax);
-       writer.write("\n");
-       writer.flush();
-       System.out.println("Gift card saved successfully!");
-     }
-     catch(IOException e){
-       System.out.println("Error while saving gift card!");
-       e.printStackTrace();
-     }
-   }
-
-   public static void main(String[] args) throws IOException{
+   public static void main(String[] args) throws Exception{
      GiftCard g1=new GiftCard("abcde");
      g1.topUp("20000.00");
      g1.printGiftCard();

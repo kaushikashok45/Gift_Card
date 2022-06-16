@@ -12,13 +12,13 @@ import com.GiftCard.User.*;
 
 public class Application{
 
-  public void clearConsoleScreen() throws IOException {
+  public void clearConsoleScreen() throws Exception {
         System.out.print("\033[H\033[2J");
         System.out.flush();
   }
 
 
-  public void userRegistration() throws IOException{
+  public void userRegistration() throws Exception{
     Scanner sc=new Scanner(System.in);
     Customer c=new Customer();
     c.printCustomerDetails();
@@ -27,7 +27,7 @@ public class Application{
   
   }
 
-  public void adminRegistration() throws IOException{
+  public void adminRegistration() throws Exception{
     Scanner sc=new Scanner(System.in);
     System.out.println("");
     System.out.println("------------------------");
@@ -42,7 +42,7 @@ public class Application{
   }
 
 
-  public void userLogin() throws IOException{
+  public void userLogin() throws Exception{
     Scanner sc=new Scanner(System.in);
      File dir=new File("./../res/");
     File file=new File(dir,"Customers.txt");
@@ -72,7 +72,7 @@ public class Application{
               session.logout();
             }
           }
-          catch(IOException e){
+          catch(Exception e){
             System.out.println("Logout unsuccessful!");
           }
          }
@@ -251,7 +251,7 @@ public class Application{
  
   }
 
-  public void admin() throws IOException{
+  public void admin() throws Exception{
     Scanner sc=new Scanner(System.in);
      File dir=new File("./../res/");
     File file=new File(dir,"Admin.txt");
@@ -375,7 +375,7 @@ public class Application{
 
   }
 
-  public void userPurchase() throws IOException{
+  public void userPurchase() throws Exception{
     Scanner sc=new Scanner(System.in);
      File dir=new File("./../res/");
     File file=new File(dir,"Products.txt");
@@ -402,7 +402,7 @@ public class Application{
     
   }
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
     Application app=new Application();
     Scanner sc=new Scanner(System.in);
     char ch='Y';

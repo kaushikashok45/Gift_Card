@@ -10,7 +10,7 @@ import com.GiftCard.User.*;
 
 public class Purchase{
 
-  public void clearConsoleScreen() throws IOException {
+  public void clearConsoleScreen() throws Exception {
        System.out.print("\033[H\033[2J");
        System.out.flush();
   }
@@ -56,7 +56,7 @@ public class Purchase{
     return result;
   }
 
-  public void listProducts() throws IOException{
+  public void listProducts() throws Exception{
     clearConsoleScreen();
     System.out.println("<----Product List---->");
     ProductReader pr=new ProductReader();
@@ -64,7 +64,7 @@ public class Purchase{
     System.out.println("\n");
   }
 
-  public String productsChooser() throws IOException{
+  public String productsChooser() throws Exception{
     System.out.println("------------------------");
     System.out.println("    Product Selector");
     System.out.println("------------------------");
@@ -101,7 +101,7 @@ public class Purchase{
     return result;
   }
 
-  public String getCardDetails() throws IOException{
+  public String getCardDetails() throws Exception{
     String result=null;
     Scanner sc=new Scanner(System.in);
     System.out.println("Enter card number: ");
@@ -116,7 +116,7 @@ public class Purchase{
     return result;
   }
 
-  public void makePurchase(String products,String gid) throws IOException{
+  public void makePurchase(String products,String gid) throws Exception{
     clearConsoleScreen();
     System.out.println("------------------------");
     System.out.println("   Order Checkout");
@@ -161,7 +161,7 @@ public class Purchase{
     System.out.println("\n");
   }
 
-  public static void main(String[] args) throws IOException{
+  public static void main(String[] args) throws Exception{
     Purchase p=new Purchase();
     Scanner sc=new Scanner(System.in);
     p.listProducts();

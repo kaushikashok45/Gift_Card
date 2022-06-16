@@ -1,2 +1,6 @@
-Lamp,1000,0,0,Out of stock,admin123
-Laptop,100000,1,100,Available,admin123
+Lamp,200,0,0,Out of stock,admin123
+Laptop,100000,1,90,Available,admin123
+Lamp,1000,2,110,Available,admin1
+Microsoft Windows,10000,3,100,Available,admin123
+Oneplus 10 Pro,1000000,4,100,Available,admin789
+Cup,100,5,100,Available,admin123
