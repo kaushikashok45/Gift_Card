@@ -1,0 +1,2 @@
+java -cp .:mysql-connector-java-8.0.29.jar com.GiftCard.User.Customer-to run with ConnectSQL
+mysql -u ashok -p-to open mysql
