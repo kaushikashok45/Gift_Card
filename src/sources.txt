@@ -1,0 +1,13 @@
+./com/GiftCard/Administration/Admin.java
+./com/GiftCard/Administration/Product.java
+./com/GiftCard/main/Application.java
+./com/GiftCard/Purchase/Purchase.java
+./com/GiftCard/User/Customer.java
+./com/GiftCard/User/GiftCard.java
+./com/GiftCard/User/Login.java
+./com/GiftCard/User/Transaction.java
+./com/GiftCard/TxtFileIO/AdminReader.java
+./com/GiftCard/TxtFileIO/CustomerReader.java
+./com/GiftCard/TxtFileIO/GiftCardReader.java
+./com/GiftCard/TxtFileIO/TransactionReader.java
+./com/GiftCard/TxtFileIO/ProductReader.java
